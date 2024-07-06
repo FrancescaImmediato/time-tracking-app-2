@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -14,13 +16,25 @@ export default function LoginPage() {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    axios.post('http://localhost:3000/api/user/create', {email, password});
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Email:', email, 'Password:', password);
-  };
+    setError('');
 
+    try {
+      const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
+      
+      if (response.data.access_token) {
+        // Store the token in localStorage or a more secure storage method
+        localStorage.setItem('token', response.data.access_token);
+        console.log('Login successful');
+        navigate('/Tracker'); // Redirect after successful login
+      } else {
+        setError('Login failed. Please check your credentials.');
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'Login failed. Please try again.');
+    }
+  };
   return (
     <div className="hero is-fullheight">
       <div className="hero-body">

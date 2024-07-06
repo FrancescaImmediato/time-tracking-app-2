@@ -27,7 +27,7 @@ export default function App () {
           <Route path='/ForgotPw' element={<ForgotPw/>}></Route>
           <Route path='/Projects' element={<ProjectsPage/>}></Route>
           <Route path='/Users' element={<UsersPage/>}></Route>
-          <Route path="Tracker" element={<TimeTrackerPage/>}></Route>
+          <Route path='/Tracker' element={<TimeTrackerPage/>}></Route>
         </Routes>
       </BrowserRouter>
      </div>

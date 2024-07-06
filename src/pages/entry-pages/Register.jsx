@@ -1,6 +1,41 @@
+// import React, { useState } from 'react';
+// import { Link, useN } from 'react-router-dom';
+// import epochLogo from '../../assets/epochLogo.png';
+// import axios from 'axios';
+
+// export default function Register() {
+//   const [email, setEmail] = useState('');
+//   const [firstName, setFirstName] = useState('');
+//   const [lastName, setLastName] = useState('');
+//   const [password, setPassword] = useState('');
+//   const [confirmPassword, setConfirmPassword] = useState('');
+
+//   // Checks if the email is valid
+//   const emailTest = /\S+@\S+\.\S+/.test(email);
+
+//   // Checks if the passwords match
+//   const passwordTest = password === confirmPassword;
+
+//   // Handles input changes and saves it to state
+//   const handleChange = (setState) => (event) => {
+//     setState(event.target.value);
+//   };
+
+//   // Handles form submission
+//   const handleSubmit = (e) => {
+//     // axios.post('http://localhost:3000/api/auth/register', {)
+
+
+//     e.preventDefault();
+//     if (passwordTest && emailTest) {
+//       console.log('Registered!');
+//     } else {
+//       console.log('Passwords do not match or email is invalid');
+//     }
+//   };
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import epochLogo from '../../assets/epochLogo.png';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -8,28 +43,47 @@ export default function Register() {
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  // Checks if the email is valid
   const emailTest = /\S+@\S+\.\S+/.test(email);
-
-  // Checks if the passwords match
   const passwordTest = password === confirmPassword;
 
-  // Handles input changes and saves it to state
   const handleChange = (setState) => (event) => {
     setState(event.target.value);
   };
 
-  // Handles form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (passwordTest && emailTest) {
-      console.log('Registered!');
-    } else {
-      console.log('Passwords do not match or email is invalid');
+    setError('');
+
+    if (!emailTest) {
+      setError('Invalid email address');
+      return;
+    }
+
+    if (!passwordTest) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/auth/register', {
+        email,
+        firstName,
+        lastName,
+        password,
+        confirmPassword
+      });
+
+      if (response.data.statusCode === HttpStatus.CREATED) {
+        console.log('Registration successful');
+        navigate('/login'); // Redirect to login page after successful registration
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'Registration failed');
     }
   };
-
   return (
     
     <div className="hero is-fullheight">
